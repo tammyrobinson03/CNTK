@@ -5143,21 +5143,21 @@ namespace CNTK
         }
 
     protected:
-        DistributedLearner(DistributedCommunicatorPtr communicator, LearnerPtr learner, size_t distributeAfterSamples)
-            : Learner(learner? learner->Parameters() : std::vector<Parameter>(),
+        DistributedLearner(DistributedCommunicatorPtr communicator, LearnersPtr learners, size_t distributeAfterSamples)
+            : Learner(learners? learners->GetParameters() : std::vector<Parameter>(),
                       LearningRateSchedule(0)),
-              m_learner(learner),
+              m_learners(learners),
               m_communicator(communicator),
               m_distributeAfterSamples(distributeAfterSamples)
         {
-            if (!m_learner)
-                InvalidArgument("Learner passed to a Distributed learner ctor must not be null.");
+            if (!m_learners)
+                InvalidArgument("Learners passed to a Distributed learner ctor must not be null.");
 
             if (!m_communicator)
                 InvalidArgument("Communicator passed to a Distributed learner ctor must not be null.");
         }
 
-        const LearnerPtr m_learner;
+        const LearnersPtr m_learners;
         const DistributedCommunicatorPtr m_communicator;
         const size_t m_distributeAfterSamples;
 

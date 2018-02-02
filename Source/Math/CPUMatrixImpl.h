@@ -2509,9 +2509,9 @@ CPUMatrix<ElemType>& CPUMatrix<ElemType>::AssignHardmaxOf(const CPUMatrix<ElemTy
     if (this != &a)
         RequireSize(a.GetNumRows(), a.GetNumCols());
 
+    memset(us.Data(), 0, a.GetNumElements() * sizeof(ElemType));
     if (isColWise)
     {
-#pragma omp parallel for
         foreach_column (j, a)
         {
             // we need to extract max
@@ -2525,14 +2525,11 @@ CPUMatrix<ElemType>& CPUMatrix<ElemType>::AssignHardmaxOf(const CPUMatrix<ElemTy
                     maxI = i;
                 }
             }
-
-            foreach_row (i, us)
-                us(i, j) = (i == maxI) ? 1.0f : 0.0f;
+            us(maxI, j) = 1.0f;
         }
     }
     else
     {
-#pragma omp parallel for
         foreach_row (i, a)
         {
             // we need to extract max
@@ -2546,9 +2543,7 @@ CPUMatrix<ElemType>& CPUMatrix<ElemType>::AssignHardmaxOf(const CPUMatrix<ElemTy
                     maxJ = j;
                 }
             }
-
-            foreach_column (j, us)
-                us(i, j) = (j == maxJ) ? 1.0f : 0.0f;
+            us(i, maxJ) = 1.0f;
         }
     }
 
